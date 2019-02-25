@@ -24,11 +24,33 @@ io.on('connect', socket => {
 
 //listen for conncn in each room:
 namespaces.forEach(ns => {
-  const thisNs = io.of(ns.endpoint)
-  thisNs.on('connect', nsSocket => {
+  io.of(ns.endpoint).on('connect', nsSocket => {
     console.log(`${nsSocket.id} has joined ${ns.endpoint}`)
     // a socket connected to a NS
     // send that NS room info back
     nsSocket.emit('nsRoomLoad', namespaces[0].rooms)
+    nsSocket.on('joinRoom', (roomToJoin, numberOfUsersCallback) => {
+      //numverofusersCB from usercountspan in #joinRoom - optional 'ack' cb t hat makes call from client to server
+      //TODO: deal w/ history when finally get some
+      // now - SOCKET BELONGS TO ROOM ARG!
+      nsSocket.join(roomToJoin)
+
+      // *as soon as join room in tHAT NS, get all users:
+      io.of('/wiki')
+        .in(roomToJoin)
+        .clients((error, clients) => {
+          if (error) { console.log(error)}
+          console.log(clients.length)
+          //puts #clients in dom w/ glyph!
+          numberOfUsersCallback(clients.length) 
+        })
+    })
+    //if browser submits form- calls newMessageToServer, and sends msg to console
+    nsSocket.on('newMessageToServer', msg => {
+      console.log(msg)
+      //send msg to ALL SOCKETS in current room that THIS 'sender' socket is in
+      //find rooms THIS socket's in => {socketId, roomName}
+      console.log(nsSocket.rooms) // => {wiki#alUdq5AMfiL-iIuzAAAH': 'wiki#alUdq5AMfiL-iIuzAAAH','New Articles': 'New Articles' }
+    })
   })
 })

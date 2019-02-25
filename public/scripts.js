@@ -1,5 +1,5 @@
 const socket = io('http://localhost:9001')
-
+let nsSocket = ''
 //listen for nslist
 socket.on('nsList', nsData => {
   console.log('list of namespaces arrved')

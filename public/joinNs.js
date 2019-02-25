@@ -1,5 +1,5 @@
 function joinNamespace(endpoint) {
-  const nsSocket = io(`http://localhost:9001/${endpoint}`)
+  nsSocket = io(`http://localhost:9001${endpoint}`)
 
   nsSocket.on('nsRoomLoad', nsRooms => {
     let roomList = document.querySelector('.room-list')
@@ -13,9 +13,14 @@ function joinNamespace(endpoint) {
     let roomLinks = Array.from(document.querySelectorAll('room'))
     roomLinks.forEach(el => {
       el.addEventListener('click', e => {
-        console.log(e.target)
+        joinRoom(e.target.innerText)
       })
     })
+
+    //auto-enter room, first time
+    const topRoom = document.querySelector('.room')
+    const roomTitle = topRoom.innerText
+    joinRoom(roomTitle)
   })
 
   nsSocket.on('messageToClients', msg => {
