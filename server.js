@@ -47,7 +47,14 @@ namespaces.forEach(ns => {
     })
     //if browser submits form- calls newMessageToServer, and sends msg to console
     nsSocket.on('newMessageToServer', msg => {
-      console.log(msg)
+     
+      const fullMsg = {
+        text: msg.text,
+        time: Date.now(),
+        username: 'elTee',
+        avatar: 'https://via.placeholder.com/30'
+      }
+      console.log(fullMsg)
       //send msg to ALL SOCKETS in current room that THIS 'sender' socket is in
       //find rooms THIS socket's in => {socketId, roomName}
       console.log(nsSocket.rooms)
@@ -55,7 +62,7 @@ namespaces.forEach(ns => {
       //bc socket ALWAYS JOINS ITS OWN ROOM CONNECTION..
       
       const roomTitle = Object.keys(nsSocket.rooms)[1]
-    io.of('/wiki').to(roomTitle).emit('messageToClients', msg)
+    io.of('/wiki').to(roomTitle).emit('messageToClients', fullMsg)
     })
   })
 })
