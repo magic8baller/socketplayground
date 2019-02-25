@@ -21,6 +21,24 @@ socket.on('nsList', nsData => {
   })
 })
 
+const nsSocket = io('http://localhost:9001/wiki')
+nsSocket.on('nsRoomLoad', nsRooms => {
+  let roomList = document.querySelector('.room-list')
+  roomList.innerHTML = ''
+  nsRooms.forEach(room => {
+    let glyph = room.privateRoom ? 'lock' : 'globe'
+    roomList.innerHTML += `<li class='room'><span class="glyphicon glyphicon-${glyph}"></span>${
+      room.roomTitle
+    }</li>`
+  })
+  let roomLinks = Array.from(document.querySelectorAll('room'))
+  roomLinks.forEach(el => {
+    el.addEventListener('click', e => {
+      //
+    })
+  })
+})
+
 socket.on('messageFromServer', dataFromServer => {
   console.log(dataFromServer)
   socket.emit('dataToServer', { data: 'data from client' })
