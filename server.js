@@ -10,7 +10,7 @@ const io = socketio(expressServer)
 //socket = connected client!
 
 io.on('connect', socket => {
-  //map array send back img + endpoint for e/ new Promise(function(resolve, reject) {
+  //map array send back img + endpoint for e/ namespace
   let nsData = namespaces.map(ns => {
     return {
       img: ns.img,
