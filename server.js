@@ -53,9 +53,9 @@ namespaces.forEach(ns => {
       console.log(nsSocket.rooms)
       //user will be in 2nd room in object list
       //bc socket ALWAYS JOINS ITS OWN ROOM CONNECTION..
-      //get keys:
-      const roomTitle = Object.keys(nsSocket.rooms)[1] //[ 'wiki#rrDKd4nJ1SyMgzk0AAAJ', 'New Articles']
-      console.log(roomTitle)
+      
+      const roomTitle = Object.keys(nsSocket.rooms)[1]
+    io.of('/wiki').to(roomTitle).emit('messageToClients', msg)
     })
   })
 })
