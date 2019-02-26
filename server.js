@@ -35,19 +35,20 @@ namespaces.forEach(ns => {
       // now - SOCKET BELONGS TO ROOM ARG!
       nsSocket.join(roomToJoin)
 
-      // *as soon as join room in tHAT NS, get all users:
-      io.of('/wiki')
-        .in(roomToJoin)
-        .clients((error, clients) => {
-          console.log(clients.length)
-          //puts #clients in dom w/ glyph!
-          numberOfUsersCallback(clients.length)
-        })
       const nsRoom = namespaces[0].rooms.find(room => {
         return room.roomTitle === roomToJoin
       })
       console.log(nsRoom)
       nsSocket.emit('historyCatchUp', nsRoom.history)
+      //send back # of users in this room to ALL sockets in this room
+      io.of('/wiki')
+        .in(roomToJoin)
+        .clients((error, clients) => {
+          console.log(`There are ${clients.length} clients in this room`)
+          io.of('/wiki')
+            .in(roomToJoin)
+            .emit('updateMembers', clients.length)
+        })
     })
     //if browser submits form- calls newMessageToServer, and sends msg to console
     nsSocket.on('newMessageToServer', msg => {
