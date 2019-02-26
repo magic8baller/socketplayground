@@ -62,6 +62,12 @@ namespaces.forEach(ns => {
       //bc socket ALWAYS JOINS ITS OWN ROOM CONNECTION..
       
       const roomTitle = Object.keys(nsSocket.rooms)[1]
+      // need to find Room object for this room
+      const nsRoom = namespaces[0].rooms.find(room => {
+        return room.roomTitle === roomTitle
+      })
+      console.log('room obj we made matches this room is...')
+      console.log(nsRoom)
     io.of('/wiki').to(roomTitle).emit('messageToClients', fullMsg)
     })
   })
