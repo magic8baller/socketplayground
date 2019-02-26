@@ -39,15 +39,18 @@ namespaces.forEach(ns => {
       io.of('/wiki')
         .in(roomToJoin)
         .clients((error, clients) => {
-          if (error) { console.log(error)}
           console.log(clients.length)
           //puts #clients in dom w/ glyph!
-          numberOfUsersCallback(clients.length) 
+          numberOfUsersCallback(clients.length)
         })
+      const nsRoom = namespaces[0].rooms.find(room => {
+        return room.roomTitle === roomToJoin
+      })
+      console.log(nsRoom)
+      nsSocket.emit('historyCatchUp', nsRoom.history)
     })
     //if browser submits form- calls newMessageToServer, and sends msg to console
     nsSocket.on('newMessageToServer', msg => {
-     
       const fullMsg = {
         text: msg.text,
         time: Date.now(),
@@ -60,15 +63,19 @@ namespaces.forEach(ns => {
       console.log(nsSocket.rooms)
       //user will be in 2nd room in object list
       //bc socket ALWAYS JOINS ITS OWN ROOM CONNECTION..
-      
+
       const roomTitle = Object.keys(nsSocket.rooms)[1]
       // need to find Room object for this room
       const nsRoom = namespaces[0].rooms.find(room => {
         return room.roomTitle === roomTitle
       })
-      console.log('room obj we made matches this room is...')
+      console.log('the room obj we made matches this NS room is...')
       console.log(nsRoom)
-    io.of('/wiki').to(roomTitle).emit('messageToClients', fullMsg)
+      // new message comes in, push to history
+      nsRoom.addMessage(fullMsg)
+      io.of('/wiki')
+        .to(roomTitle)
+        .emit('messageToClients', fullMsg)
     })
   })
 })
